@@ -39,6 +39,21 @@ jobs:
         working-directory: flutter
         run: flutter build apk --debug --target-platform android-arm64
 
+      - name: Verify APK signature and Android manifest
+        working-directory: flutter
+        shell: bash
+        run: |
+          APK="build/app/outputs/flutter-apk/app-debug.apk"
+          BUILD_TOOLS="$(find "$ANDROID_HOME/build-tools" -mindepth 1 -maxdepth 1 -type d | sort -V | tail -n 1)"
+          echo "APK: $APK"
+          echo "Build-tools: $BUILD_TOOLS"
+          echo "--- APK signature verification ---"
+          "$BUILD_TOOLS/apksigner" verify --verbose --print-certs "$APK"
+          echo "--- APK package and SDK requirements ---"
+          "$BUILD_TOOLS/aapt" dump badging "$APK" | grep -E "^(package:|sdkVersion:|targetSdkVersion:|native-code:)"
+          echo "--- APK alignment verification ---"
+          "$BUILD_TOOLS/zipalign" -c -v 4 "$APK"
+
       - name: Upload Debug APK
         uses: actions/upload-artifact@v4
         with:
