@@ -1,0 +1,48 @@
+name: Android Debug APK
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - redesign
+    paths:
+      - "flutter/**"
+      - ".github/workflows/android-debug.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  build-debug-apk:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Install Flutter dependencies
+        working-directory: flutter
+        run: flutter pub get
+
+      - name: Build Debug APK
+        working-directory: flutter
+        run: flutter build apk --debug
+
+      - name: Upload Debug APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: radiochat-debug-apk
+          path: flutter/build/app/outputs/flutter-apk/*.apk
+          if-no-files-found: error
+          retention-days: 14
