@@ -1,0 +1,119 @@
+<!DOCTYPE html>  
+<html lang="ru">  
+<head>  
+<meta charset="utf-8">  
+<meta name="viewport" content="width=device-width, initial-scale=1.0">  
+<title>Инструкция по прошивке УПТС—РК1 (Радиочат)</title>  
+<style>  
+  body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; line-height: 1.6; max-width: 820px; margin: 0 auto; padding: 16px; color: #1f2328; }  
+  h1 { font-size: 1.6rem; }  
+  h2 { font-size: 1.3rem; margin-top: 2rem; }  
+  h3 { font-size: 1.1rem; margin-top: 1.5rem; }  
+  code { background: #f6f8fa; padding: 1px 4px; border-radius: 4px; }  
+  pre { background: #f6f8fa; padding: 10px 12px; border-radius: 6px; overflow-x: auto; }  
+  pre code { padding: 0; background: none; }  
+  .note { border-left: 4px solid #d29922; background: #fff8e6; padding: 10px 14px; margin: 1rem 0; }  
+  .danger { border-left: 4px solid #cf222e; background: #ffebe9; padding: 10px 14px; margin: 1rem 0; }  
+  ol li, ul li { margin-bottom: 8px; }  
+</style>  
+</head>  
+<body>  
+  
+<h1>Инструкция по прошивке УПТС—РК1</h1>  
+<p>Это руководство описывает обновление прошивки устройства передачи текстовых сообщений по радиоканалу (УПТС—РК1) через веб-инструмент <strong>ESP Launchpad</strong> в режиме <strong>DIY</strong> с объединённым файлом прошивки <code>merged-binary.bin</code>.</p>  
+  
+<div class="note">  
+  <strong>Важно:</strong> ESP Launchpad требует браузер с поддержкой Web Serial API — <strong>Google Chrome</strong> или <strong>Microsoft Edge</strong> на компьютере (Windows или Linux). Firefox и Safari не поддерживаются.  
+</div>  
+  
+<h2>Что понадобится</h2>  
+<ul>  
+  <li>Устройство УПТС—РК1.</li>  
+  <li><strong>USB-кабель с передачей данных.</strong> Кабели «только для зарядки» не подойдут — компьютер не увидит плату. Обычно подходят кабели от смартфонов или внешних дисков.</li>  
+  <li>Компьютер с Chrome или Edge.</li>  
+  <li>Для Windows — при необходимости драйверы USB-последовательного порта (CP210x, CH340 и т.п.). Обычно ставятся автоматически.</li>  
+  <li>Файл прошивки <code>merged-binary.bin</code>: <a href="https://dmitray27.github.io/esp/merge_bin/esp32/merged-binary.bin" download>скачать для ESP32</a>.</li>  
+</ul>  
+  
+<h2>Пошаговая инструкция</h2>  
+<ol>  
+  <li>  
+    <strong>Подключите устройство.</strong><br>  
+    Подключите УПТС—РК1 к компьютеру USB-кабелем, убедитесь, что устройство включено. Если хотите заранее проверить, видит ли компьютер плату — см. раздел «Возможные проблемы» ниже.  
+  </li>  
+  <li>  
+    <strong>Откройте ESP Launchpad.</strong><br>  
+    В Chrome или Edge перейдите на <a href="https://espressif.github.io/esp-launchpad/" target="_blank" rel="noopener">espressif.github.io/esp-launchpad</a> и найдите кнопку <strong>Connect</strong>.  
+  </li>  
+  <li>  
+    <strong>Подключитесь к устройству.</strong><br>  
+    Нажмите <strong>Connect</strong> — браузер покажет системное окно выбора порта. Выберите ваш порт (например, <code>USB Serial (ttyUSB0)</code> или <code>COM3</code>) и нажмите <strong>«Подключение»</strong>. После подключения появится информация о чипе (модель зависит от вашей платы: ESP32 или ESP32-S3).  
+    <div class="note">  
+      <strong>Если список портов пуст:</strong> компьютер не видит плату. Проверьте кабель (нужен с передачей данных) и драйверы — см. «Возможные проблемы» ниже.  
+    </div>  
+  </li>  
+  <li>  
+    <strong>Переключитесь в режим DIY.</strong><br>  
+    В ESP Launchpad два режима: <strong>Quick Start</strong> (готовые демо) и <strong>DIY</strong> (своя прошивка). Выберите <strong>DIY</strong> — появится форма с полем <strong>Flash Address</strong> и выбором файла.  
+  </li>  
+  <li>  
+    <strong>Укажите файл и адрес.</strong><br>  
+    В поле <strong>Flash Address</strong> введите <code>0x0</code> — для объединённого образа это стандартный адрес (файл уже содержит загрузчик, таблицу разделов и приложение). Нажмите <strong>Add File</strong> и выберите скачанный <code>merged-binary.bin</code>.  
+  </li>  
+  <li>  
+    <strong>Запустите прошивку.</strong><br>  
+    Нажмите <strong>Program</strong>. В консоли будет виден прогресс записи — дождитесь 100%.  
+  </li>  
+  <li>  
+    <strong>Перезагрузите устройство.</strong><br>  
+    После завершения (сообщение <code>Leaving...</code>) нажмите <strong>Reset Device</strong>, чтобы запустить новую прошивку. Если кнопка недоступна — отключите и снова подключите USB-кабель.  
+  </li>  
+</ol>  
+  
+<div class="danger">  
+  <strong>Не нажимайте «Erase Flash»!</strong> Стирание флеш-памяти полностью очищает устройство — оно перестанет запускаться до повторной прошивки. Нужна только кнопка <strong>Program</strong>.  
+</div>  
+  
+<div class="note">  
+  <strong>Внимание:</strong> не отключайте устройство и не закрывайте вкладку браузера во время прошивки — это может повредить устройство.  
+</div>  
+  
+<h2>Возможные проблемы и решения</h2>  
+<ul>  
+  <li>  
+    <strong>Как проверить, видит ли компьютер устройство?</strong><br>  
+    <strong>Windows:</strong> правой кнопкой по «Пуск» → <strong>«Диспетчер устройств»</strong> → раздел <strong>«Порты (COM и LPT)»</strong> — там должен быть новый порт (например, <em>USB-SERIAL CH340 (COM3)</em> или <em>Silicon Labs CP210x (COM4)</em>).<br>  
+    <strong>Linux:</strong> в терминале выполните <code>dmesg | tail</code> — внизу должна быть строка вида <code>ch341-uart converter now attached to ttyUSB0</code>. Это значит, что порт <code>/dev/ttyUSB0</code> готов к работе.  
+  </li>  
+  <li>  
+    <strong>Плата не определяется, список портов пуст.</strong><br>  
+    Проверьте USB-кабель — многие кабели только для зарядки и не передают данные. Попробуйте кабель, которым точно передавали файлы (от смартфона или внешнего диска), и другой USB-порт — желательно напрямую в материнскую плату, без хаба.  
+  </li>  
+  <li>  
+    <strong>Windows: порт не отображается (жёлтый восклицательный знак в Диспетчере устройств).</strong><br>  
+    Установите драйверы USB-последовательного порта (CP210x, CH340, FTDI — в зависимости от платы). Обычно они идут в комплекте с платой или скачиваются с сайта производителя чипа.  
+  </li>  
+  <li>  
+    <strong>Linux: порт не отображается в списке Connect.</strong><br>  
+    У пользователя должны быть права на последовательный порт. Добавьте себя в группу <code>dialout</code>:  
+    <pre><code>sudo usermod -a -G dialout $USER</code></pre>  
+    Затем <strong>выйдите из системы и войдите снова</strong> (или перезагрузитесь). Не используйте <code>chmod 666</code> — это открывает порт всем локальным пользователям.<br>  
+    В Arch Linux и производных группа называется <code>uucp</code>:  
+    <pre><code>sudo usermod -a -G uucp $USER</code></pre>  
+  </li>  
+  <li>  
+    <strong>Закрыл окно выбора порта или нажал «Отмена».</strong><br>  
+    Просто нажмите <strong>Connect</strong> ещё раз — запрос появится повторно.  
+  </li>  
+  <li>  
+    <strong>Устройство не определяется / ошибка при прошивке.</strong><br>  
+    Переведите плату в режим загрузчика: <strong>зажмите и удерживайте BOOT</strong>, нажмите и отпустите <strong>RESET</strong> (EN), отпустите BOOT. Если кнопки RESET нет — отключите USB, зажмите BOOT, подключите USB, отпустите BOOT. Затем повторите прошивку.  
+  </li>  
+  <li>  
+    <strong>Ошибка при прошивке (файл).</strong><br>  
+    Проверьте, что <code>merged-binary.bin</code> не повреждён и предназначен для вашей модели устройства, и что в поле <strong>Flash Address</strong> указано <code>0x0</code>.  
+  </li>  
+</ul>  
+  
+</body>  
+</html>  
